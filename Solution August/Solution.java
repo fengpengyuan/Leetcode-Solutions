@@ -2,6 +2,7 @@ package com.leetcode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2937,7 +2938,434 @@ public class Solution {
 	        return -1;	        
 	    }
 	
+	 public List<Integer> preorderTraversal(TreeNode root) {
+	        List<Integer> res=new ArrayList<Integer>();
+	        if(root==null)
+	            return res;
+	        Stack<TreeNode> stk=new Stack<TreeNode>();
+	        stk.push(root);
+	        
+	        while(!stk.isEmpty()){
+	            TreeNode top=stk.pop();
+	            res.add(top.val);
+	            if(top.right!=null)
+	            	stk.push(top.right);
+	            if(top.left!=null)
+	            	stk.push(top.left);
+	        }
+	        return res;
+	    }
+	 
+	 public RandomListNode copyRandomList(RandomListNode head) {
+	        if(head==null)
+	        	return null;
+	        RandomListNode cur=head;
+	        while(cur!=null){
+	        	RandomListNode next=cur.next;
+	        	RandomListNode copy=new RandomListNode(cur.label);
+	        	cur.next=copy;
+	        	copy.next=next;
+	        	cur=next;
+	        }
+	        
+	        cur=head;
+	        
+	        while(cur!=null){
+	        	if(cur.random!=null){
+	        		cur.next.random=cur.random.next;
+	        	}
+	        	cur=cur.next.next;
+	        }
+	        RandomListNode clone=head.next;
+	        cur=head;
+	        RandomListNode cur1=clone;
+	        while(cur!=null){
+	        	cur.next=cur1.next;
+	        	cur1.next=cur.next.next;
+	        	cur=cur.next;
+	        	cur1=cur1.next;
+	        }
+	        return clone;
+	    }
 	
+	 
+	 public List<List<Integer>> pathSum(TreeNode root, int sum) {
+	        List<List<Integer>> res=new ArrayList<List<Integer>>();
+	        if(root==null)
+	            return res;
+	        List<Integer> sol=new ArrayList<Integer>();
+	        pathSumUtil(root, 0, sum, sol, res);
+	        return res;
+	    }
+	    
+	    public void pathSumUtil(TreeNode root, int cursum, int sum, List<Integer> sol, List<List<Integer>> res){
+	        if(root==null)
+	            return;
+	        cursum+=root.val;
+	        sol.add(root.val);
+	        if(root.left==null&&root.right==null&&cursum==sum){
+	            List<Integer> out=new ArrayList<Integer>(sol);
+	            res.add(out);
+	        }
+	        pathSumUtil(root.left, cursum, sum, sol, res);
+	        pathSumUtil(root.right, cursum, sum, sol, res);
+	        cursum-=root.val;
+	        sol.remove(sol.size()-1);
+	    }
+	    
+	    public boolean isPalindrome(String s) {
+	        if(s.isEmpty()||s.length()<2)
+	            return true;
+	        s=s.toLowerCase();
+	        int beg=0;
+	        int end=s.length()-1;
+	        
+	        while(beg<end){
+	            while(beg<end&&!Character.isLetterOrDigit(s.charAt(beg)))
+	                beg++;
+	            while(beg<end&&!Character.isLetterOrDigit(s.charAt(end)))
+	                end--;
+	            if(s.charAt(beg)!=s.charAt(end))
+	                return false;
+	            beg++;
+	            end--;
+	        }
+	        return true;
+	    }
+	    
+	    public int sumNumbers(TreeNode root) {
+	        return sumNumbersUtil(root, 0);
+	    }
+	    
+	    public int sumNumbersUtil(TreeNode root, int sum){
+	        if(root==null)
+	            return 0;
+	        sum=sum*10+root.val;
+	        if(root.left==null&&root.right==null)
+	            return sum;
+	        return sumNumbersUtil(root.left, sum)+sumNumbersUtil(root.right, sum);
+	    }
+	    
+	    
+	    public int removeDuplicates(int[] A) {
+	        if(A.length<3)
+	            return A.length;
+	        int count=1;
+	        int j=1;
+	        for(int i=1;i<A.length;i++){
+	            if(A[i]!=A[i-1]){
+	                A[j++]=A[i];
+	                count=1;
+	            }
+	            else{
+	                count++;
+	                if(count<3){
+	                    A[j++]=A[i];
+	                }
+	            }
+	        }
+	        return j;
+	    }
+	    
+	    public ListNode deleteDuplicates(ListNode head) {
+	    	if(head==null||head.next==null)
+	            return head;
+	        ListNode cur=head.next;
+	        ListNode pre=head;
+	        
+	        while(cur!=null){
+	            if(cur.val==pre.val)
+	                cur=cur.next;
+	            else{
+	                pre.next=cur;
+	                pre=pre.next;
+	                cur=cur.next;
+	            }
+	        }
+	        pre.next=cur;
+	        return head;
+	    }
+	    
+	    
+	    public ListNode deleteDuplicates2(ListNode head) {
+	        if(head==null||head.next==null)
+	            return head;
+	        ListNode cur=head.next;
+	        ListNode pre=head;
+	        while(cur!=null){
+	            while(cur!=null&&cur.val==pre.val)
+	                cur=cur.next;
+	            pre.next=cur;
+	            pre=cur;
+	            if(cur!=null)
+	                cur=cur.next;
+	        }
+	        return head;
+	    }
+	    
+	    
+	    public List<Integer> postorderTraversal(TreeNode root) {
+	        List<Integer> res = new ArrayList<Integer>();
+	        if(root==null)
+	            return res;
+	        Stack<TreeNode> stk=new Stack<TreeNode>();
+	        TreeNode cur=root;
+	        while(cur!=null){
+	            stk.push(cur);
+	            cur=cur.left;
+	        }
+	        
+	        TreeNode pre=null;
+	        
+	        while(!stk.isEmpty()){
+	            TreeNode top=stk.peek();
+	            if(top.right!=null&&pre!=top.right){
+	                top=top.right;
+	                while(top!=null){
+	                    stk.push(top);
+	                    top=top.left;
+	                }
+	            }
+	            else{
+	                top=stk.pop();
+	                res.add(top.val);
+	                pre=top;
+	            }
+	        }
+	        return res;
+	    }
+	    
+	    public int evalRPN2(String[] tokens) {
+	        Stack<Integer> stk=new Stack<Integer>();
+			 for(int i=0;i<tokens.length;i++){
+				 String token=tokens[i];
+				 if(!token.equals("+")&&!token.equals("-")&&!token.equals("*")&&!token.equals("/")){
+					 int val =Integer.valueOf(token);
+					 stk.push(val);
+				 }
+				 else{
+					 int op1=stk.pop();
+					 int op2=stk.pop();
+					 if(token.equals("+"))
+						 stk.push(op1+op2);
+					 else if(token.equals("-"))
+						 stk.push(op2-op1);
+					 else if(token.equals("*"))
+						 stk.push(op2*op1);
+					 else
+						 stk.push(op2/op1);
+				 }
+			 }
+			 return stk.pop();
+	    }
+	    
+	    class IntervalComparator implements Comparator<Interval>{
+
+			@Override
+			public int compare(Interval o1, Interval o2) {
+				// TODO Auto-generated method stub
+				return o1.start-o2.start;
+			}
+	    	
+	    }
+	    
+	    public List<Interval> merge(List<Interval> intervals) {
+	        if(intervals.size()<2)
+	        	return intervals;
+	        Collections.sort(intervals, new IntervalComparator());
+	        List<Interval> res=new ArrayList<Interval>();
+	        res.add(intervals.get(0));
+	        for(int i=1; i<intervals.size();i++){
+	        	Interval interval=intervals.get(i);
+	        	Interval preInterval=res.get(res.size()-1);
+	        	if(interval.start>preInterval.end)
+	        		res.add(interval);
+	        	else
+	        		preInterval.end=Math.max(interval.end, preInterval.end);
+	        }
+	        return res;
+	    }
+	    
+	    public void connect(TreeLinkNode root) {
+	        if(root==null)
+	            return;
+	        if(root.left!=null)
+	            root.left.next=root.right;
+	        if(root.right!=null&&root.next!=null)
+	            root.right.next=root.next.left;
+	        connect(root.left);
+	        connect(root.right);
+	    }
+	    
+	    public void connect2(TreeLinkNode root) {
+	        if(root==null)
+	            return;
+	        Queue<TreeLinkNode> que=new LinkedList<TreeLinkNode>();
+	        int curlevel=0;
+	        int nextlevel=0;
+	        que.add(root);
+	        curlevel++;
+	        
+	        while(!que.isEmpty()){
+	            TreeLinkNode top=que.remove();
+	            curlevel--;
+	            if(top.left!=null){
+	                que.add(top.left);
+	                nextlevel++;
+	            }
+	            if(top.right!=null){
+	                que.add(top.right);
+	                nextlevel++;
+	            }
+	            if(curlevel==0){
+	                top.next=null;
+	                curlevel=nextlevel;
+	                nextlevel=0;
+	            }
+	            else{
+	                top.next=que.peek();
+	            }
+	        }
+	    }
+	    
+	    public int numTrees(int n) {
+	        if(n<=1)
+	            return 1;
+	        int total=0;
+	        for(int i=1;i<=n;i++){
+	            total+=numTrees(i-1)*numTrees(n-i);
+	        }
+	        return total;
+	    }
+	    
+	    public void sortColors(int[] A) {
+	        if(A.length<2)
+	            return;
+	        int i=0;
+	        int j=A.length-1;
+	        int k=A.length-1;
+	        while(i<=j){
+	            if(A[i]==0)
+	                i++;
+	            else if(A[i]==1){
+	                A[i]=A[j];
+	                A[j--]=1;
+	            }
+	            else{
+	                A[i]=A[k];
+	                A[k--]=2;
+	                if(j>k)
+	                    j=k;
+	            }
+	        }
+	    }
+	    
+	    public void setZeroes(int[][] matrix) {
+	        int m=matrix.length;
+	        int n=matrix[0].length;
+	        boolean[] row=new boolean[m];
+	        boolean[] col=new boolean[n];
+	        
+	        for(int i=0;i<m;i++){
+	            for(int j=0;j<n;j++){
+	                if(matrix[i][j]==0){
+	                    row[i]=true;
+	                    col[j]=true;
+	                }
+	            }
+	        }
+	        
+	        for(int i=0;i<m;i++){
+	            for(int j=0;j<n;j++){
+	                if(row[i]||col[j])
+	                    matrix[i][j]=0;
+	            }
+	        }
+	    }
+	    
+	    public static String simplifyPath(String path) {
+	        if(path.isEmpty())
+	            return "/";
+	        String[] strs=path.split("/");
+
+	        Stack<String> stk=new Stack<String>();
+	        String res="";
+	        for(int i=0;i<strs.length;i++){
+	        	String s=strs[i];
+	            if(s.equals(".")||s.equals(""))
+	                continue;
+	            if(s.equals("..")){
+	                if(!stk.isEmpty())
+	                   stk.pop(); 
+	            }
+	            else{
+	                stk.push(s);
+	            }
+	        }
+	        
+	        if(stk.isEmpty())
+	        	return "/";
+	        while(!stk.isEmpty()){
+	            res="/"+stk.pop()+res;
+	        }
+	        return res;
+	    }
+	    
+	    public int canCompleteCircuit(int[] gas, int[] cost) {
+	        int total=0;
+	        int sum=0;
+	        int index=0;
+	        for(int i=0;i<gas.length;i++){
+	            sum+=gas[i]-cost[i];
+	            if(sum<0){
+	                index=i+1;
+	                sum=0;
+	            }
+	            total+=gas[i]-cost[i];
+	        }
+	        return total>=0?index:-1;
+	    }
+	    
+	    public List<Integer> getRow(int rowIndex) {
+	        List<Integer> res=new ArrayList<Integer>();
+	        int[][] dp=new int[rowIndex+1][rowIndex+1];
+	        dp[0][0]=1;
+	        for(int i=1;i<=rowIndex;i++)
+	            dp[i][0]=1;
+	        for(int i=1;i<=rowIndex;i++){
+	            for(int j=1;j<=rowIndex;j++){
+	                if(j==i){
+	                    dp[i][j]=1;
+	                }
+	                else
+	                    dp[i][j]=dp[i-1][j]+dp[i-1][j-1];
+	            }
+	        }
+	        
+	        for(int i=0;i<=rowIndex;i++){
+	            res.add(dp[rowIndex][i]);
+	        }
+	        return res;
+	    }
+	    
+	    
+	    public List<Integer> getRowOkSpace(int rowIndex) {
+	    	 List<Integer> res=new ArrayList<Integer>();
+	         int[] dp=new int[rowIndex+1];
+	         dp[0]=1;
+	         for(int i=1;i<=rowIndex;i++){
+	             for(int j=i;j>=1;j--){
+	                 if(j==i)
+	                     dp[j]=1;
+	                 else
+	                     dp[j]=dp[j]+dp[j-1];
+	             }
+	         }
+	         for(int i=0;i<=rowIndex;i++)
+	             res.add(dp[i]);
+	         return res;
+	    }
+	    
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		System.out.println(longestValidParentheses("((()())(()()()"));
@@ -3281,7 +3709,7 @@ public class Solution {
 	    System.out.println();
 	    generateMatrix0X2(5,4);
 	    
-	    
+	    System.out.println(simplifyPath("/.."));
 	    
 	    
 	}
